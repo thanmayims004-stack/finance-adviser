@@ -14,11 +14,13 @@ const Dashboard: React.FC<DashboardProps> = ({ spendingData, isLoading, onGetAdv
   const [advice, setAdvice] = useState<{ advice: string; query_used: string; status: string } | null>(null);
   const [isAdviceLoading, setIsAdviceLoading] = useState(false);
 
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-    }).format(amount);
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
   };
 
   const getTotalSpending = () => {
@@ -46,15 +48,6 @@ const Dashboard: React.FC<DashboardProps> = ({ spendingData, isLoading, onGetAdv
     } finally {
       setIsAdviceLoading(false);
     }
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
   };
 
   const totalSpending = spendingData.data.reduce((sum, item) => sum + item.amount, 0);
