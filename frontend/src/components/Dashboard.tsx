@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import SpendingPieChart from './PieChart';
 import TechnicalTrace from './TechnicalTrace';
 import { SpendingData } from '../types';
+import { TrendingUp, TrendingDown, DollarSign, Target } from 'lucide-react';
 
 interface DashboardProps {
   spendingData: { data: SpendingData[]; query_used: string; status: string };
@@ -41,57 +42,93 @@ const Dashboard: React.FC<DashboardProps> = ({ spendingData, isLoading, onGetAdv
   const totalSpending = spendingData.data.reduce((sum, item) => sum + item.amount, 0);
 
   return (
-    <div className="space-y-6">
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-dark-secondary rounded-lg p-4 border border-dark-accent">
-          <div className="text-dark-muted text-sm mb-1">Total Spending</div>
-          <div className="text-2xl font-bold text-dark-text">{formatCurrency(totalSpending)}</div>
+    <div className="space-y-8">
+      {/* Premium Stats Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="premium-card rounded-xl p-6 hover:scale-105 transition-transform duration-300">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 rounded-xl">
+              <DollarSign className="w-6 h-6 text-emerald-400" />
+            </div>
+            <TrendingUp className="w-5 h-5 text-emerald-400" />
+          </div>
+          <div className="text-slate-400 text-sm mb-2">Total Spending</div>
+          <div className="text-3xl font-bold text-premium">{formatCurrency(totalSpending)}</div>
+          <div className="mt-2 text-xs text-slate-500">This period</div>
         </div>
-        <div className="bg-dark-secondary rounded-lg p-4 border border-dark-accent">
-          <div className="text-dark-muted text-sm mb-1">Categories</div>
-          <div className="text-2xl font-bold text-dark-text">{spendingData.data.length}</div>
+        <div className="premium-card rounded-xl p-6 hover:scale-105 transition-transform duration-300">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-xl">
+              <Target className="w-6 h-6 text-blue-400" />
+            </div>
+            <TrendingDown className="w-5 h-5 text-blue-400" />
+          </div>
+          <div className="text-slate-400 text-sm mb-2">Categories</div>
+          <div className="text-3xl font-bold text-blue-400">{spendingData.data.length}</div>
+          <div className="mt-2 text-xs text-slate-500">Active categories</div>
         </div>
-        <div className="bg-dark-secondary rounded-lg p-4 border border-dark-accent">
-          <div className="text-dark-muted text-sm mb-1">Avg per Category</div>
-          <div className="text-2xl font-bold text-dark-text">
+        <div className="premium-card rounded-xl p-6 hover:scale-105 transition-transform duration-300">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-xl">
+              <TrendingUp className="w-6 h-6 text-purple-400" />
+            </div>
+            <div className="w-5 h-5 rounded-full bg-purple-400 premium-glow"></div>
+          </div>
+          <div className="text-slate-400 text-sm mb-2">Avg per Category</div>
+          <div className="text-3xl font-bold text-purple-400">
             {formatCurrency(spendingData.data.length > 0 ? totalSpending / spendingData.data.length : 0)}
           </div>
+          <div className="mt-2 text-xs text-slate-500">Monthly average</div>
         </div>
       </div>
 
       {/* Pie Chart */}
       <SpendingPieChart data={spendingData.data} isLoading={isLoading} />
 
-      {/* Get Advice Section */}
-      <div className="bg-dark-secondary rounded-lg p-6 border border-dark-accent">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold text-dark-text">💡 Financial Advice</h3>
+      {/* Premium Advice Section */}
+      <div className="premium-card rounded-xl p-8">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-3">
+            <div className="p-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 rounded-xl">
+              <TrendingUp className="w-6 h-6 text-emerald-400" />
+            </div>
+            <h3 className="text-2xl font-bold text-premium">AI Financial Insights</h3>
+          </div>
+          <div className="px-3 py-1 bg-emerald-500/20 rounded-full border border-emerald-500/30">
+            <span className="text-xs text-emerald-400 font-medium">Powered by AI</span>
+          </div>
+        </div>
+        <div className="flex items-center space-x-4">
           <button
             onClick={handleGetAdvice}
             disabled={isAdviceLoading}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-medium rounded-lg transition-colors duration-200 flex items-center space-x-2"
+            className="premium-btn px-6 py-3 text-white font-semibold rounded-xl flex items-center space-x-3 disabled:opacity-50"
           >
             {isAdviceLoading ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                <span>Analyzing...</span>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                <span>Analyzing your finances...</span>
               </>
             ) : (
               <>
-                <span>🤖</span>
-                <span>Get Advice</span>
+                <TrendingUp className="w-5 h-5" />
+                <span>Get AI Advice</span>
               </>
             )}
           </button>
+          <div className="flex items-center space-x-2 px-4 py-2 bg-slate-800/50 rounded-xl border border-slate-700">
+            <Shield className="w-4 h-4 text-emerald-400" />
+            <span className="text-sm text-slate-300">Secure & Private</span>
+          </div>
         </div>
 
         {advice && (
-          <div className={`p-4 rounded-lg border-2 ${
-            advice.status === 'success' ? 'border-green-400 bg-green-950' : 
-            'border-red-400 bg-red-950'
-          }`}>
-            <div className="text-dark-text whitespace-pre-line">{advice.advice}</div>
+          <div className="mt-6 p-6 bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl border border-emerald-800/30">
+            <div className="flex items-center space-x-2 mb-3">
+              <TrendingUp className="w-5 h-5 text-emerald-400" />
+              <h4 className="text-lg font-semibold text-emerald-400">AI Recommendation</h4>
+            </div>
+            <div className="text-slate-200 whitespace-pre-line leading-relaxed">{advice.advice}</div>
           </div>
         )}
       </div>
