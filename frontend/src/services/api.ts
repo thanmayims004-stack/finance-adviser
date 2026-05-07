@@ -119,7 +119,7 @@ export const getGoals = async (): Promise<{ data: Goal[]; query_used: string; st
 
 export const createFinancialGoal = async (goal: { goal_name: string; target_amount: number; current_amount: number; target_date: string; goal_type: string }): Promise<{ data: any; query_used: string; status: string }> => {
   try {
-    const response = await api.post('/api/financial-goats', goal);
+    const response = await api.post('/api/financial-goals', goal);
     return response.data;
   } catch (error) {
     console.error('Error creating financial goal:', error);

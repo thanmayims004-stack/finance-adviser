@@ -579,11 +579,11 @@ async def create_financial_goal(goal: FinancialGoalRequest):
         cursor = connection.cursor()
         
         query = """
-        INSERT INTO financial_goals (goal_name, target_amount, current_amount, target_date, goal_type) 
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO goals (goal_name, target_amount, current_saved, deadline, goal_category, priority, created_at, updated_at) 
+        VALUES (?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
         """
         
-        cursor.execute(query, (goal.goal_name, goal.target_amount, goal.current_amount, goal.target_date, goal.goal_type))
+        cursor.execute(query, (goal.goal_name, goal.target_amount, goal.current_amount, goal.target_date, goal.goal_type, 'Medium'))
         connection.commit()
         
         return {
