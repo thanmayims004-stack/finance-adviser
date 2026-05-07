@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { validateForm, goalFormRules } from '../utils/validation';
 
 interface FinancialGoal {
   id: number;
@@ -30,12 +31,31 @@ const FinancialGoals: React.FC<FinancialGoalsProps> = ({ goals, onCreateGoal, on
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+  const [updateError, setUpdateError] = useState<string>('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.goal_name || !formData.target_amount || !formData.target_date) return;
-
+    
+    // Validate form
+    const validationData = {
+      goal_name: formData.goal_name,
+      target_amount: parseFloat(formData.target_amount) || 0,
+      current_amount: parseFloat(formData.current_amount) || 0,
+      target_date: formData.target_date,
+      goal_type: formData.goal_type
+    };
+    
+    const validation = validateForm(validationData, goalFormRules);
+    
+    if (!validation.isValid) {
+      setFormErrors(validation.errors);
+      return;
+    }
+    
+    setFormErrors({});
     setIsSubmitting(true);
+    
     try {
       await onCreateGoal({
         goal_name: formData.goal_name,
@@ -54,6 +74,7 @@ const FinancialGoals: React.FC<FinancialGoalsProps> = ({ goals, onCreateGoal, on
       });
     } catch (error) {
       console.error('Error creating goal:', error);
+      setFormErrors({ submit: 'Failed to create goal. Please try again.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -298,11 +319,21 @@ const FinancialGoals: React.FC<FinancialGoalsProps> = ({ goals, onCreateGoal, on
                 <input
                   type="text"
                   value={formData.goal_name}
-                  onChange={(e) => setFormData({...formData, goal_name: e.target.value})}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  onChange={(e) => {
+                    setFormData({...formData, goal_name: e.target.value});
+                    if (formErrors.goal_name) {
+                      setFormErrors({...formErrors, goal_name: ''});
+                    }
+                  }}
+                  className={`w-full px-3 py-2 bg-gray-700 border rounded-lg text-white focus:outline-none focus:border-blue-500 ${
+                    formErrors.goal_name ? 'border-red-500' : 'border-gray-600'
+                  }`}
                   placeholder="e.g., Emergency Fund, Retirement"
                   required
                 />
+                {formErrors.goal_name && (
+                  <p className="text-red-400 text-xs mt-1">{formErrors.goal_name}</p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -313,12 +344,22 @@ const FinancialGoals: React.FC<FinancialGoalsProps> = ({ goals, onCreateGoal, on
                   <input
                     type="number"
                     value={formData.target_amount}
-                    onChange={(e) => setFormData({...formData, target_amount: e.target.value})}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    onChange={(e) => {
+                      setFormData({...formData, target_amount: e.target.value});
+                      if (formErrors.target_amount) {
+                        setFormErrors({...formErrors, target_amount: ''});
+                      }
+                    }}
+                    className={`w-full px-3 py-2 bg-gray-700 border rounded-lg text-white focus:outline-none focus:border-blue-500 ${
+                      formErrors.target_amount ? 'border-red-500' : 'border-gray-600'
+                    }`}
                     placeholder="10000"
                     min="1"
                     required
                   />
+                  {formErrors.target_amount && (
+                    <p className="text-red-400 text-xs mt-1">{formErrors.target_amount}</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-gray-300 text-sm font-medium mb-2">

@@ -14,6 +14,24 @@ const Dashboard: React.FC<DashboardProps> = ({ spendingData, isLoading, onGetAdv
   const [advice, setAdvice] = useState<{ advice: string; query_used: string; status: string } | null>(null);
   const [isAdviceLoading, setIsAdviceLoading] = useState(false);
 
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(amount);
+  };
+
+  const getTotalSpending = () => {
+    return spendingData.data.reduce((total, item) => total + item.amount, 0);
+  };
+
+  const getTopCategory = () => {
+    if (spendingData.data.length === 0) return 'N/A';
+    return spendingData.data.reduce((max, item) => 
+      item.amount > max.amount ? item : max
+    ).category;
+  };
+
   const handleGetAdvice = async () => {
     setIsAdviceLoading(true);
     try {
@@ -44,35 +62,43 @@ const Dashboard: React.FC<DashboardProps> = ({ spendingData, isLoading, onGetAdv
   return (
     <div className="space-y-8">
       {/* Premium Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="premium-card rounded-xl p-6 hover:scale-105 transition-transform duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 rounded-xl">
-              <DollarSign className="w-6 h-6 text-emerald-400" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 border border-gray-700 hover:border-blue-500 transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-400 text-sm font-medium">Total Spending</p>
+              <p className="text-3xl font-bold text-white mt-1">{formatCurrency(getTotalSpending())}</p>
+              <p className="text-xs text-gray-500 mt-2">Last 30 days</p>
             </div>
-            <TrendingUp className="w-5 h-5 text-emerald-400" />
+            <div className="bg-red-900/50 p-3 rounded-lg">
+              <TrendingDown className="w-8 h-8 text-red-400" />
+            </div>
           </div>
-          <div className="text-slate-400 text-sm mb-2">Total Spending</div>
-          <div className="text-3xl font-bold text-premium">{formatCurrency(totalSpending)}</div>
-          <div className="mt-2 text-xs text-slate-500">This period</div>
         </div>
-        <div className="premium-card rounded-xl p-6 hover:scale-105 transition-transform duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-xl">
-              <Target className="w-6 h-6 text-blue-400" />
+        
+        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 border border-gray-700 hover:border-emerald-500 transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-400 text-sm font-medium">Categories</p>
+              <p className="text-3xl font-bold text-white mt-1">{spendingData.data.length}</p>
+              <p className="text-xs text-gray-500 mt-2">Active categories</p>
             </div>
-            <TrendingDown className="w-5 h-5 text-blue-400" />
+            <div className="bg-blue-900/50 p-3 rounded-lg">
+              <DollarSign className="w-8 h-8 text-blue-400" />
+            </div>
           </div>
-          <div className="text-slate-400 text-sm mb-2">Categories</div>
-          <div className="text-3xl font-bold text-blue-400">{spendingData.data.length}</div>
-          <div className="mt-2 text-xs text-slate-500">Active categories</div>
         </div>
-        <div className="premium-card rounded-xl p-6 hover:scale-105 transition-transform duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-xl">
-              <TrendingUp className="w-6 h-6 text-purple-400" />
+        
+        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 border border-gray-700 hover:border-purple-500 transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-400 text-sm font-medium">Top Category</p>
+              <p className="text-3xl font-bold text-white mt-1 truncate">{getTopCategory()}</p>
+              <p className="text-xs text-gray-500 mt-2">Highest spending</p>
             </div>
-            <div className="w-5 h-5 rounded-full bg-purple-400 premium-glow"></div>
+            <div className="bg-emerald-900/50 p-3 rounded-lg">
+              <Target className="w-8 h-8 text-emerald-400" />
+            </div>
           </div>
           <div className="text-slate-400 text-sm mb-2">Avg per Category</div>
           <div className="text-3xl font-bold text-purple-400">
@@ -86,13 +112,13 @@ const Dashboard: React.FC<DashboardProps> = ({ spendingData, isLoading, onGetAdv
       <SpendingPieChart data={spendingData.data} isLoading={isLoading} />
 
       {/* Premium Advice Section */}
-      <div className="premium-card rounded-xl p-8">
+      <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-8 border border-gray-700">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
             <div className="p-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 rounded-xl">
               <TrendingUp className="w-6 h-6 text-emerald-400" />
             </div>
-            <h3 className="text-2xl font-bold text-premium">AI Financial Insights</h3>
+            <h3 className="text-2xl font-bold text-white">AI Financial Insights</h3>
           </div>
           <div className="px-3 py-1 bg-emerald-500/20 rounded-full border border-emerald-500/30">
             <span className="text-xs text-emerald-400 font-medium">Powered by AI</span>
@@ -102,7 +128,7 @@ const Dashboard: React.FC<DashboardProps> = ({ spendingData, isLoading, onGetAdv
           <button
             onClick={handleGetAdvice}
             disabled={isAdviceLoading}
-            className="premium-btn px-6 py-3 text-white font-semibold rounded-xl flex items-center space-x-3 disabled:opacity-50"
+            className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 px-6 py-3 text-white font-semibold rounded-xl flex items-center space-x-3 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 disabled:scale-100 shadow-lg hover:shadow-xl"
           >
             {isAdviceLoading ? (
               <>
