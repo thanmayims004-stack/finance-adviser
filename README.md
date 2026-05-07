@@ -1,167 +1,268 @@
-# 💰 Finance Adviser
+# 🏦 RIA Investment Advisor
 
-A modern finance tracking application with AI-powered financial advice, featuring a FastAPI backend and React frontend with real-time spending visualization.
+A professional-grade Registered Investment Advisor (RIA) platform built with FastAPI and React, featuring AI-powered financial advice, goal tracking, and portfolio management with a premium Deep Navy & Emerald Green interface.
 
-## 🌟 Features
+## ✨ Features
 
-- 🤖 **AI Financial Advice** - Get personalized saving tips powered by Groq's Llama 3.3 70B model
-- 📊 **Interactive Dashboard** - Beautiful pie charts showing spending by category
-- 🔍 **SQL Trace Transparency** - See exactly what queries power your financial insights
-- 🌙 **Dark Mode** - Modern, professional dark theme
-- 📱 **Responsive Design** - Works perfectly on desktop and mobile
-- 💾 **SQLite Database** - Local database for secure transaction storage
+### 🎯 **Investment Advisory**
+- **AI-Powered Advice**: Groq AI integration with Llama 3.3 70B model
+- **Risk Profiling**: Personalized investment style assessment (Aggressive/Conservative/Balanced)
+- **50/30/20 Strategy**: Professional asset allocation recommendations
+- **Portfolio Analysis**: Real-time investment performance tracking
 
-## 🛠️ Technologies Used
+### 📊 **Financial Goals & Milestones**
+- **Goal Tracking**: Set and monitor multiple financial goals
+- **Progress Visualization**: Color-coded progress bars (Green/Yellow/Blue scheme)
+- **Smart Recommendations**: AI suggests spending optimizations to reach goals faster
+- **Deadline Management**: Track time remaining for each goal
 
-### Backend
-- **FastAPI** - Modern, fast web framework for building APIs with Python
-- **SQLite** - Lightweight, serverless database engine
-- **Groq AI** - Fast inference platform for Llama 3.3 70B model
-- **Python** - Core backend programming language
+### 💼 **Portfolio Management**
+- **Investment Tracking**: Stocks, Bonds, Mutual Funds, ETFs
+- **Performance Metrics**: Gain/Loss calculations and percentage returns
+- **Asset Allocation**: Diversified portfolio analysis
+- **Transaction History**: Complete audit trail with categorization
 
-### Frontend
-- **React** - Modern JavaScript library for building user interfaces
-- **TypeScript** - Type-safe JavaScript for better code quality
-- **TailwindCSS** - Utility-first CSS framework for rapid styling
-- **Recharts** - Composable charting library for data visualization
-- **Axios** - Promise-based HTTP client for API communication
+### 🎨 **Premium UI/UX**
+- **Deep Navy & Emerald Green Theme**: Professional financial services aesthetic
+- **Lucide-React Icons**: Modern, scalable iconography
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+- **Micro-interactions**: Smooth animations and hover effects
+## 🏗️ Architecture
 
-## 🚀 How to Install
+### Backend (FastAPI)
+```
+├── � Database Schema
+│   ├── transactions (with type column)
+│   ├── goals (target_amount, current_saved, deadline)
+│   └── risk_profile (investment style, horizon, income)
+├── 🔗 API Endpoints
+│   ├── /api/transactions - Transaction management
+│   ├── /api/goals - Goal CRUD operations
+│   ├── /api/risk-profile - Risk assessment
+│   ├── /ria-advice - Portfolio recommendations
+│   └── /get-goals - AI-powered goal advice
+└── 🤖 AI Integration
+    └── Groq AI with Certified Financial Planner prompts
+```
+
+### Frontend (React)
+```
+├── 🎯 Components
+│   ├── FinancialMilestones - Progress tracking
+│   ├── Portfolio - Investment overview
+│   ├── RiskProfile - Risk assessment
+│   ├── RIAAdvice - AI recommendations
+│   └── Dashboard - Main interface
+├── 🎨 Styling
+│   ├── Tailwind CSS
+│   ├── Custom CSS variables
+│   └── Premium color scheme
+└── 🔗 API Services
+    └── Axios-based HTTP client
+```
+
+## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.8 or higher
-- Node.js 16 or higher
-- npm or yarn package manager
+- Python 3.8+
+- Node.js 16+
+- SQLite 3
+- Groq API key
 
-### 1. Clone the Repository
+### Backend Setup
+
+1. **Clone the repository**
 ```bash
 git clone https://github.com/thanmayims004-stack/finance-adviser.git
 cd finance-adviser
 ```
 
-### 2. Backend Setup
-
-#### Install Python Dependencies
+2. **Install Python dependencies**
 ```bash
 pip install -r requirements.txt
 ```
 
-#### Configure Environment Variables
-Create a `.env` file in the root directory:
-```env
-DB_PATH=/path/to/your/finance.db
+3. **Set up environment variables**
+```bash
+cp .env.example .env
+# Edit .env and add your Groq API key
 GROQ_API_KEY=your_groq_api_key_here
 ```
 
-#### Get Groq API Key
-1. Visit [Groq Console](https://console.groq.com)
-2. Sign up for a free account
-3. Generate an API key
-4. Add it to your `.env` file
-
-#### Start the Backend Server
+4. **Initialize the database**
 ```bash
-python3 -m uvicorn main:app --reload --port 8001
+python check_and_fix_schema.py
+```
+
+5. **Start the backend server**
+```bash
+python main.py
 ```
 
 The API will be available at `http://localhost:8001`
 
-### 3. Frontend Setup
+### Frontend Setup
 
-#### Navigate to Frontend Directory
+1. **Navigate to frontend directory**
 ```bash
 cd frontend
 ```
 
-#### Install Node.js Dependencies
+2. **Install Node.js dependencies**
 ```bash
 npm install
 ```
 
-#### Start the Frontend Server
+3. **Start the development server**
 ```bash
 npm start
 ```
 
 The application will be available at `http://localhost:3000`
 
-### 4. Database Setup
+## � Database Schema
 
-#### Create SQLite Database
-The application uses SQLite for local data storage. Create a database file and set up the transactions table:
-
+### Transactions Table
 ```sql
 CREATE TABLE transactions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY,
     txn_date DATE,
     description VARCHAR(255),
     amount DECIMAL(10,2),
-    category VARCHAR(50)
+    category VARCHAR(100),
+    type VARCHAR(20) -- 'Investment', 'Dividend', 'Expense'
 );
 ```
 
-#### Add Sample Data (Optional)
+### Goals Table
 ```sql
-INSERT INTO transactions (txn_date, description, amount, category) VALUES 
-('2024-05-01', 'Grocery Store', -50.25, 'Food'),
-('2024-05-02', 'Salary Credit', 3000.00, 'Income'),
-('2024-05-03', 'Netflix', -15.99, 'Subscription');
+CREATE TABLE goals (
+    id INTEGER PRIMARY KEY,
+    goal_name VARCHAR(255),
+    target_amount DECIMAL(12,2),
+    current_saved DECIMAL(12,2),
+    deadline DATE,
+    goal_category VARCHAR(50),
+    priority VARCHAR(20)
+);
 ```
 
-## 📡 API Endpoints
+### Risk Profile Table
+```sql
+CREATE TABLE risk_profile (
+    id INTEGER PRIMARY KEY,
+    age INTEGER,
+    risk_tolerance VARCHAR(20), -- 'Aggressive', 'Conservative', 'Balanced'
+    investment_horizon INTEGER,
+    annual_income DECIMAL(12,2),
+    dependents INTEGER
+);
+```
 
-### Core Endpoints
-- `GET /health` - Health check and database connection status
-- `GET /api/spending` - Get spending data grouped by category with SQL trace
-- `GET /get-advice` - Get AI financial advice based on last 5 transactions
+## 🎯 Progress Bar Color Scheme
 
-### API Documentation
-Visit `http://localhost:8001/docs` for interactive API documentation.
+- 🟢 **Green (#10b981)**: Goals more than 50% complete
+- 🟡 **Yellow (#f59e0b)**: Goals less than 50% complete
+- 🔵 **Blue (#3b82f6)**: Investment-related goals (Retirement, Savings)
 
-## 🎯 How It Works
+## 🤖 AI Features
 
-### AI Advice System
-1. **Data Collection**: Retrieves your last 5 transactions from the database
-2. **AI Analysis**: Sends transaction data to Groq's Llama 3.3 70B model
-3. **Smart Tips**: Returns funny but useful saving suggestions
-4. **Transparency**: Shows the exact SQL query used for data retrieval
+### Investment Advice
+- Portfolio analysis based on current holdings
+- Risk-adjusted recommendations
+- 50/30/20 asset allocation strategy
+- Professional Certified Financial Planner persona
 
-### Spending Visualization
-- **Real-time Data**: Fetches latest spending information
-- **Category Breakdown**: Groups expenses by category
-- **Interactive Charts**: Hover over pie slices for detailed information
-- **Color Coding**: Each category has a unique color for easy identification
+### Goal-Based Recommendations
+- Spending pattern analysis
+- Goal completion optimization
+- Category-specific savings suggestions
+- Timeline acceleration strategies
+
+## 🔧 API Endpoints
+
+### Transactions
+- `GET /api/transactions` - Get all transactions with type filtering
+- `GET /api/spending` - Get spending data by category
+
+### Goals
+- `GET /api/goals` - Get all financial goals with progress
+- `POST /api/financial-goals` - Create new financial goal
+
+### Risk Profile
+- `GET /api/risk-profile` - Get current risk profile
+- `POST /api/risk-profile` - Create/update risk profile
+
+### AI Advice
+- `GET /ria-advice` - Get portfolio investment advice
+- `GET /get-goals` - Get AI-powered goal recommendations
+
+## 🛠️ Technologies Used
+
+### Backend
+- **FastAPI**: Modern, fast web framework for building APIs
+- **SQLite**: Lightweight, serverless database
+- **Groq AI**: Advanced AI model integration
+- **Pydantic**: Data validation using Python type annotations
+- **SQLAlchemy**: SQL toolkit and ORM
+
+### Frontend
+- **React 18**: Modern JavaScript library for building user interfaces
+- **TypeScript**: Type-safe JavaScript
+- **Tailwind CSS**: Utility-first CSS framework
+- **Lucide React**: Beautiful & consistent icon toolkit
+- **Axios**: Promise-based HTTP client
 
 ## 🎨 UI Components
 
-- **Dashboard**: Main overview with spending statistics
-- **Pie Chart**: Visual representation of spending by category
-- **AI Advice Section**: Get personalized financial tips
-- **Technical Trace**: SQL query transparency for educational purposes
-- **Dark Mode**: Easy-on-the-eyes professional theme
+### Financial Milestones
+- Progress bars with custom color coding
+- Goal status indicators (Achieved, On Track, Needs Attention)
+- Deadline tracking with urgency indicators
+- Interactive AI advice integration
 
-## 📊 Sample Categories
+### Portfolio Dashboard
+- Investment performance metrics
+- Asset allocation visualization
+- Gain/Loss tracking
+- Transaction history
 
-The application tracks expenses across common categories:
-- 🍔 **Food & Dining**
-- 💡 **Bills & Utilities**
-- 🛍️ **Shopping**
-- 🚗 **Transportation**
-- 💪 **Health & Fitness**
-- 🎬 **Entertainment**
-- 📱 **Subscriptions**
+### Risk Assessment
+- Interactive risk profiling questionnaire
+- Investment style recommendations
+- Asset allocation suggestions
+- Professional financial guidance
 
-## 🔧 Configuration
+## 🔒 Security Features
 
-### Environment Variables
-```env
-DB_PATH=/Users/thanmayims/Documents/finance.db
-GROQ_API_KEY=gsk_your_api_key_here
-```
+- Environment variable configuration
+- SQL injection prevention with parameterized queries
+- CORS configuration for API security
+- Input validation with Pydantic models
 
-### Port Configuration
-- Backend: `8001` (configurable)
-- Frontend: `3000` (standard React port)
+## 📈 Performance
+
+- Optimized database queries with indexing
+- Efficient React component rendering
+- Lazy loading for large datasets
+- Responsive design for all devices
+
+## 📱 Screenshots
+
+### Dashboard View
+- Premium Deep Navy & Emerald Green interface
+- Financial milestones with progress tracking
+- AI-powered recommendations panel
+
+### Goal Tracking
+- Color-coded progress bars
+- Deadline management
+- Interactive goal creation
+
+### Portfolio Analysis
+- Investment performance metrics
+- Asset allocation charts
+- Risk assessment tools
 
 ## 🤝 Contributing
 
@@ -175,18 +276,22 @@ GROQ_API_KEY=gsk_your_api_key_here
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
-
-- [Groq](https://groq.com/) for providing fast AI inference capabilities
-- [FastAPI](https://fastapi.tiangolo.com/) for the excellent Python web framework
-- [React](https://reactjs.org/) for the powerful frontend library
-- [Recharts](https://recharts.org/) for the beautiful charting components
-- [TailwindCSS](https://tailwindcss.com/) for the utility-first CSS framework
-
 ## 📞 Support
 
-If you encounter any issues or have questions, please open an issue on GitHub.
+For support, please email thanmayims@example.com or create an issue in the repository.
+
+## 🙏 Acknowledgments
+
+- **Groq AI** for providing the powerful language model
+- **FastAPI** for the excellent web framework
+- **React** for the amazing UI library
+- **Tailwind CSS** for the utility-first CSS framework
 
 ---
 
-**Built with ❤️ for smarter financial management** 🚀
+**Built with ❤️ for professional financial advisory services**
+
+<div align="center">
+  <p>🏦 Professional Investment Advisor Platform</p>
+  <p>📊 AI-Powered • 🎯 Goal-Oriented • 💼 Portfolio Management</p>
+</div>
