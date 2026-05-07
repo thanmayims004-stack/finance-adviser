@@ -188,7 +188,7 @@ const RIADashboard: React.FC = () => {
                   riaAdvice?.status || 'success'}
           endpoint={`/api/${activeTab === 'portfolio' ? 'investments' : 
                        activeTab === 'risk' ? 'risk-profile' :
-                       activeTab === 'goals' ? 'financial-goats' :
+                       activeTab === 'goals' ? 'financial-goals' :
                        'ria-advice'}`}
         />
       </div>
