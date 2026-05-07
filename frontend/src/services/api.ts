@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { SpendingData, MonthlySpending } from '../types';
+import { SpendingData, MonthlySpending, Goal } from '../types';
 
 const API_BASE_URL = 'http://localhost:8001';
 
@@ -97,12 +97,22 @@ export const createRiskProfile = async (profile: { age: number; risk_tolerance: 
   }
 };
 
-export const getFinancialGoals = async (): Promise<{ data: any[]; query_used: string; status: string }> => {
+export const getFinancialGoals = async (): Promise<{ data: Goal[]; query_used: string; status: string }> => {
   try {
-    const response = await api.get('/api/financial-goats');
+    const response = await api.get('/api/financial-goals');
     return response.data;
   } catch (error) {
     console.error('Error fetching financial goals:', error);
+    return { data: [], query_used: 'Request failed', status: 'error' };
+  }
+};
+
+export const getGoals = async (): Promise<{ data: Goal[]; query_used: string; status: string }> => {
+  try {
+    const response = await api.get('/api/goals');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching goals:', error);
     return { data: [], query_used: 'Request failed', status: 'error' };
   }
 };

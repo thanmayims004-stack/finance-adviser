@@ -8,9 +8,9 @@ import TechnicalTrace from './TechnicalTrace';
 import { getInvestments, getRiskProfile, getFinancialGoals, createRiskProfile, createFinancialGoal, getRIAAdvice } from '../services/api';
 
 const RIADashboard: React.FC = () => {
-  const [investments, setInvestments] = useState({ data: [], query_used: '', status: 'loading' });
-  const [riskProfile, setRiskProfile] = useState({ data: null, query_used: '', status: 'loading' });
-  const [goals, setGoals] = useState({ data: [], query_used: '', status: 'loading' });
+  const [investments, setInvestments] = useState<{ data: any[]; query_used: string; status: string }>({ data: [], query_used: '', status: 'loading' });
+  const [riskProfile, setRiskProfile] = useState<{ data: any; query_used: string; status: string }>({ data: null, query_used: '', status: 'loading' });
+  const [goals, setGoals] = useState<{ data: any[]; query_used: string; status: string }>({ data: [], query_used: '', status: 'loading' });
   const [riaAdvice, setRIAAdvice] = useState<{ advice: string; query_used: string; status: string } | null>(null);
   const [isLoadingAdvice, setIsLoadingAdvice] = useState(false);
   const [activeTab, setActiveTab] = useState('portfolio');

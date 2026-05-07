@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import SpendingPieChart from './PieChart';
 import TechnicalTrace from './TechnicalTrace';
 import { SpendingData } from '../types';
-import { TrendingUp, TrendingDown, DollarSign, Target } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, Target, Shield } from 'lucide-react';
 
 interface DashboardProps {
   spendingData: { data: SpendingData[]; query_used: string; status: string };
