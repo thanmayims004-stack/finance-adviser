@@ -587,13 +587,68 @@ async def create_financial_goal(goal: FinancialGoalRequest):
         connection.commit()
         
         return {
-            "data": {"message": "Financial goal created successfully"},
+            "data": {
+                "goal_name": goal.goal_name,
+                "target_amount": goal.target_amount,
+                "current_amount": goal.current_amount,
+                "target_date": goal.target_date,
+                "goal_type": goal.goal_type
+            },
             "query_used": query,
             "status": "success"
         }
         
     except Error as e:
         print(f"Error creating financial goal: {e}")
+        return {"data": None, "query_used": query if 'query' in locals() else "Query failed", "status": "error"}
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+@app.put("/api/financial-goals/{goal_id}")
+async def update_financial_goal(goal_id: int, goal_update: dict):
+    """Update a financial goal's target amount"""
+    connection = get_db_connection()
+    if not connection:
+        return {"data": None, "query_used": "Failed to connect", "status": "error"}
+    
+    try:
+        cursor = connection.cursor()
+        
+        # Check if goal exists
+        check_query = "SELECT id FROM goals WHERE id = ?"
+        cursor.execute(check_query, (goal_id,))
+        existing_goal = cursor.fetchone()
+        
+        if not existing_goal:
+            return {"data": None, "query_used": check_query, "status": "error", "message": "Goal not found"}
+        
+        # Update the target amount
+        query = """
+        UPDATE goals 
+        SET target_amount = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """
+        
+        cursor.execute(query, (
+            goal_update.get('target_amount'),
+            goal_id
+        ))
+        
+        connection.commit()
+        
+        return {
+            "data": {
+                "goal_id": goal_id,
+                "target_amount": goal_update.get('target_amount')
+            },
+            "query_used": query,
+            "status": "success"
+        }
+        
+    except Error as e:
+        print(f"Error updating financial goal: {e}")
         return {"data": None, "query_used": query if 'query' in locals() else "Query failed", "status": "error"}
     finally:
         if connection:

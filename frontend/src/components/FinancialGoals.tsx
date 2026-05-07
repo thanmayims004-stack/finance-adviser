@@ -14,10 +14,13 @@ interface FinancialGoal {
 interface FinancialGoalsProps {
   goals: { data: FinancialGoal[]; query_used: string; status: string };
   onCreateGoal: (goal: { goal_name: string; target_amount: number; current_amount: number; target_date: string; goal_type: string }) => Promise<void>;
+  onRefreshGoals: () => Promise<void>;
 }
 
-const FinancialGoals: React.FC<FinancialGoalsProps> = ({ goals, onCreateGoal }) => {
+const FinancialGoals: React.FC<FinancialGoalsProps> = ({ goals, onCreateGoal, onRefreshGoals }) => {
   const [showForm, setShowForm] = useState(false);
+  const [editingGoal, setEditingGoal] = useState<number | null>(null);
+  const [editTargetAmount, setEditTargetAmount] = useState('');
   const [formData, setFormData] = useState({
     goal_name: '',
     target_amount: '',
@@ -26,6 +29,7 @@ const FinancialGoals: React.FC<FinancialGoalsProps> = ({ goals, onCreateGoal }) 
     goal_type: 'Short-term'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,6 +110,45 @@ const FinancialGoals: React.FC<FinancialGoalsProps> = ({ goals, onCreateGoal }) 
     return diffDays > 0 ? diffDays : 0;
   };
 
+  const handleEditTarget = (goalId: number, currentTarget: number) => {
+    setEditingGoal(goalId);
+    setEditTargetAmount(currentTarget.toString());
+  };
+
+  const handleUpdateTarget = async (goalId: number) => {
+    if (!editTargetAmount || parseFloat(editTargetAmount) <= 0) return;
+    
+    setIsUpdating(true);
+    try {
+      // Call API to update the goal target amount
+      const response = await fetch(`http://localhost:8001/api/financial-goals/${goalId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          target_amount: parseFloat(editTargetAmount)
+        }),
+      });
+      
+      if (response.ok) {
+        setEditingGoal(null);
+        setEditTargetAmount('');
+        // Refresh the goals data
+        await onRefreshGoals();
+      }
+    } catch (error) {
+      console.error('Error updating goal:', error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingGoal(null);
+    setEditTargetAmount('');
+  };
+
   return (
     <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
       <div className="flex justify-between items-center mb-6">
@@ -163,8 +206,51 @@ const FinancialGoals: React.FC<FinancialGoalsProps> = ({ goals, onCreateGoal }) 
                     <p className="text-white font-semibold">{formatCurrency(goal.current_amount)}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-gray-400">Target</p>
-                    <p className="text-white font-semibold">{formatCurrency(goal.target_amount)}</p>
+                    <div className="flex items-center justify-end space-x-2">
+                      <p className="text-gray-400">Target</p>
+                      <button
+                        onClick={() => handleEditTarget(goal.id, goal.target_amount)}
+                        className="text-blue-400 hover:text-blue-300 transition-colors duration-200"
+                        title="Edit target amount"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                    </div>
+                    {editingGoal === goal.id ? (
+                      <div className="flex items-center space-x-1 mt-1">
+                        <input
+                          type="number"
+                          value={editTargetAmount}
+                          onChange={(e) => setEditTargetAmount(e.target.value)}
+                          className="w-24 px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-sm focus:outline-none focus:border-blue-500"
+                          min="1"
+                          step="0.01"
+                        />
+                        <button
+                          onClick={() => handleUpdateTarget(goal.id)}
+                          disabled={isUpdating}
+                          className="text-green-400 hover:text-green-300 transition-colors duration-200"
+                          title="Save"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={handleCancelEdit}
+                          className="text-red-400 hover:text-red-300 transition-colors duration-200"
+                          title="Cancel"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    ) : (
+                      <p className="text-white font-semibold">{formatCurrency(goal.target_amount)}</p>
+                    )}
                   </div>
                 </div>
 

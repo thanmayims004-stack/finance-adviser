@@ -63,6 +63,15 @@ const RIADashboard: React.FC = () => {
     }
   };
 
+  const handleRefreshGoals = async () => {
+    try {
+      const updatedGoals = await getFinancialGoals();
+      setGoals(updatedGoals);
+    } catch (error) {
+      console.error('Error refreshing goals:', error);
+    }
+  };
+
   const handleGetRIAAdvice = async () => {
     setIsLoadingAdvice(true);
     try {
@@ -146,6 +155,7 @@ const RIADashboard: React.FC = () => {
             <FinancialGoals 
               goals={goals} 
               onCreateGoal={handleCreateGoal}
+              onRefreshGoals={handleRefreshGoals}
             />
           </div>
         )}
